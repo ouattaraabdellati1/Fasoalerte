@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Signaler – FasoAlerte{% endblock %}
+{% block page %}report{% endblock %}
+{% block content %}
+<div class="privacy"><strong>Mode 100 % anonyme</strong><p>Aucun nom, numéro ou compte n'est demandé. La position GPS et les photos nettoyées servent uniquement à traiter le dossier.</p></div>
+
+<form id="f" novalidate>
+  <h2 class="sec">1. Nature de l'incident <span class="req">requis</span></h2>
+  <div class="tiles" role="radiogroup">
+    <label class="tile"><input type="radio" name="category" value="securite"><span><b>Sécurité</b>Activité suspecte, menace, troubles</span></label>
+    <label class="tile"><input type="radio" name="category" value="route"><span><b>Route / Accident</b>Voie coupée, collision, obstacle</span></label>
+    <label class="tile"><input type="radio" name="category" value="disparition"><span><b>Disparition</b>Enfant égaré, personne vulnérable</span></label>
+    <label class="tile"><input type="radio" name="category" value="fraude_prix"><span><b>Fraude &amp; Prix</b>Spéculation, faux billet, escroquerie</span></label>
+    <label class="tile wide"><input type="radio" name="category" value="autre"><span><b>Autre urgence citoyenne</b>Incendie, effondrement, secours animalier</span></label>
+  </div>
+
+  <h2 class="sec">2. Lieu <span class="req">requis</span></h2>
+  <button type="button" class="btn light full" id="gps">📍 Activer ma position GPS</button>
+  <div class="muted small" id="gpsmsg"></div>
+  <input type="hidden" name="latitude"><input type="hidden" name="longitude">
+  <label class="lbl" for="city">Ville</label>
+  <select id="city" name="city">
+    <option value="">— Choisir —</option>
+    <option>Ouagadougou</option><option>Bobo-Dioulasso</option><option>Koudougou</option><option>Kaya</option><option value="Fada">Fada N'Gourma</option><option value="Autre">Autre</option>
+  </select>
+  <label class="lbl" for="hint">Repère physique</label>
+  <input id="hint" name="location_hint" maxlength="255" placeholder="Ex : Secteur 30, près du marché">
+
+  <h2 class="sec">3. Description <span class="muted small">écrite ou vocale</span></h2>
+  <textarea name="description" maxlength="3000" rows="4" placeholder="Que s'est-il passé ? Combien de personnes ou véhicules ? Quelle direction ? Des blessés ?"></textarea>
+  <div class="voice">
+    <button type="button" class="btn light" id="rec">🎙️ Enregistrer une note vocale</button>
+    <audio id="player" controls hidden></audio>
+    <button type="button" class="btn ghost" id="recdel" hidden>Supprimer</button>
+  </div>
+
+  <h2 class="sec">4. Photo <span class="muted small">facultatif</span></h2>
+  <label class="photo">
+    <input type="file" id="photo" accept="image/*">
+    <span id="photolabel">📷 Ajouter une photo (compressée, données du téléphone effacées)</span>
+  </label>
+  <img id="preview" alt="" hidden>
+
+  <div class="err" id="err" hidden></div>
+  <button type="submit" class="btn green full big2" id="send">🔒 Envoyer le signalement chiffré</button>
+  <p class="muted small center">Sans internet ? Appelez le <a href="tel:1010">1010</a> (gratuit).</p>
+</form>
+
+<section id="done" class="done" hidden>
+  <h2>Signalement transmis ✔</h2>
+  <p>Conservez ce code pour suivre votre dossier. Il est la seule trace de votre signalement.</p>
+  <div class="code" id="code"></div>
+  <a class="btn green full" id="follow" href="/suivi/">Suivre ce dossier</a>
+  <button type="button" class="btn ghost full" id="again">Faire un autre signalement</button>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'core/report.js' %}"></script>{% endblock %}

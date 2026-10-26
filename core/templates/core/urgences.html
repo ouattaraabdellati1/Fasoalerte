@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% block title %}Urgences – FasoAlerte{% endblock %}
+{% block page %}urgences{% endblock %}
+{% block content %}
+<h2 class="sec">Numéros prioritaires</h2>
+<!-- IMPORTANT : confirmer ces numéros avec les services officiels avant toute diffusion. -->
+<div class="nums">
+  <a class="num" href="tel:17"><b>17</b>Police secours</a>
+  <a class="num" href="tel:16"><b>16</b>Gendarmerie</a>
+  <a class="num" href="tel:18"><b>18</b>Pompiers</a>
+  <a class="num" href="tel:15"><b>15</b>SAMU</a>
+</div>
+<a class="btn green big full" href="tel:1010">1010 — Sécurité citoyenne<small>Signalement d'activités suspectes</small></a>
+
+<h2 class="sec">Guide réflexe citoyen</h2>
+<ol class="guide">
+  <li><b>Mise à l'abri immédiate</b>Rejoignez un bâtiment solide, éloignez-vous des fenêtres et coupez les lampes extérieures.</li>
+  <li><b>Silence radio &amp; discrétion</b>Passez vos téléphones en mode silencieux. Ne diffusez jamais la position des forces de sécurité.</li>
+  <li><b>Alerte via FasoAlerte</b>Utilisez l'onglet « Signaler » ou appelez le 1010 dès que vous êtes en sécurité. Indiquez les points de repère et la nature du danger.</li>
+</ol>
+<div class="note">Contenu de démonstration : à valider avec les autorités compétentes.</div>
+{% endblock %}

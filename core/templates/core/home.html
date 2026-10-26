@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block page %}home{% endblock %}
+{% block content %}
+<div class="chips"><span class="chip">🔒 Anonymat activé</span><span class="chip" id="stamp"></span></div>
+
+<section id="hero" class="hero lvl-none">
+  <div class="hero-tag" id="hero-tag">Alerte nationale</div>
+  <h1 id="hero-title">Aucune alerte nationale en cours</h1>
+  <p id="hero-msg">Les alertes officielles apparaîtront ici dès leur publication.</p>
+  <div class="hero-src" id="hero-src"></div>
+</section>
+
+<div class="two">
+  <a class="btn green big" href="/signaler/">Signaler un fait<small>Alerte citoyenne anonyme</small></a>
+  <a class="btn red big center" href="tel:1010">1010<small>Appel gratuit</small></a>
+</div>
+
+<h2 class="sec">Prix plafonnés</h2>
+<div id="prices" class="prices"><p class="muted">Chargement…</p></div>
+<a class="link" href="/signaler/?cat=fraude_prix">Signaler une spéculation ou un prix abusif →</a>
+
+<div class="note">Les données sont enregistrées sur votre téléphone : la consultation reste possible hors-ligne.</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'core/home.js' %}"></script>{% endblock %}

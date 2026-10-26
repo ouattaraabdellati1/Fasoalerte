@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Suivi – FasoAlerte{% endblock %}
+{% block page %}track{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Recherche de dossier <span class="chip small">Anonymat total</span></h2>
+  <p class="muted">Saisissez le code remis lors du signalement.</p>
+  <form id="tf">
+    <input id="tcode" autocomplete="off" autocapitalize="characters" maxlength="24" placeholder="FA-OUAGA-XXXXXXXX">
+    <button class="btn green full" type="submit">Consulter le statut</button>
+  </form>
+  <div class="err" id="terr" hidden></div>
+</section>
+
+<section class="card" id="result" hidden>
+  <div class="muted small">RÉFÉRENCE</div>
+  <div class="code small" id="rcode"></div>
+  <div class="kv"><span>Motif</span><b id="rcat"></b></div>
+  <div class="kv"><span>Ville</span><b id="rcity"></b></div>
+  <div class="kv"><span>Date</span><b id="rdate"></b></div>
+  <div class="kv" id="runitrow"><span>Unité</span><b id="runit"></b></div>
+  <h3>Évolution de l'intervention <span class="muted small" id="rstep"></span></h3>
+  <ol class="steps" id="steps"></ol>
+  <div class="official" id="official" hidden><b>Message officiel</b><p id="otext"></p></div>
+</section>
+
+<section class="card" id="hist" hidden>
+  <h3>Dossiers sur cet appareil</h3>
+  <ul class="hist" id="histlist"></ul>
+</section>
+
+<section class="danger">
+  <h3>Sécurité personnelle</h3>
+  <p>En cas de contrôle ou de risque, effacez les codes et données conservés sur cet appareil.</p>
+  <button class="btn red full" id="wipe" type="button">Effacer l'historique de cet appareil</button>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'core/track.js' %}"></script>{% endblock %}
