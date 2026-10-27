@@ -1,0 +1,21 @@
+{% extends "core/console/base.html" %}
+{% block title %}Mercuriale{% endblock %}
+{% block content %}
+<header class="hero"><div><small>RÉGULATION DU POUVOIR D'ACHAT</small><h1>Mercuriale des prix plafonnés</h1></div></header>
+{% for e in errors %}<div class="err">{{ e }}</div>{% endfor %}
+<section class="panel">
+<form method="post">{% csrf_token %}
+  <div class="tablewrap"><table>
+    <thead><tr><th>Denrée</th><th>Unité</th><th>Ancien prix</th><th>Prix plafond (F CFA)</th></tr></thead>
+    <tbody>{% for p in items %}
+      <tr><td><b>{{ p.product }}</b></td><td>{{ p.unit }}</td><td>{{ p.previous_price_fcfa|default:"—" }}</td>
+          <td>{% if can %}<input class="num" name="price_{{ p.id }}" value="{{ p.max_price_fcfa }}" inputmode="numeric" pattern="[0-9]*">{% else %}{{ p.max_price_fcfa }}{% endif %}</td></tr>
+    {% endfor %}
+    {% if can %}<tr class="newrow"><td><input name="new_product" placeholder="Nouvelle denrée" maxlength="80"></td><td><input name="new_unit" placeholder="Unité (sac 50 kg)" maxlength="60"></td><td></td><td><input class="num" name="new_price" placeholder="Prix" inputmode="numeric" pattern="[0-9]*"></td></tr>{% endif %}
+    </tbody>
+  </table></div>
+  {% if can %}<button class="btn primary" type="submit" data-confirm="Publier ces prix pour tous les citoyens ?">Publier tout</button>{% endif %}
+  <p class="muted small">Quand un prix change, l'ancien est conservé et affiché barré aux citoyens.</p>
+</form>
+</section>
+{% endblock %}

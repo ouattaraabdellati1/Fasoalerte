@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .uploads import clean_audio, clean_photo
-from .models import IncidentReport, NationalAlert, PriceCeiling, StatusEvent
+from .models import FeedItem, IncidentReport, NationalAlert, PriceCeiling, StatusEvent
 
 
 class ReportCreateSerializer(serializers.ModelSerializer):
@@ -64,10 +64,38 @@ class ReportTrackSerializer(serializers.ModelSerializer):
                   "status_label", "assigned_unit", "official_message", "events"]
 
 
+def public_url(f):
+    """Fichiers OFFICIELS uniquement (audio, images du fil) : adresse publique /official/..."""
+    if not f or not f.name.startswith("official/"):
+        return None
+    return "/official/" + f.name[len("official/"):]
+
+
 class NationalAlertSerializer(serializers.ModelSerializer):
+    audio = serializers.SerializerMethodField()
+
     class Meta:
         model = NationalAlert
-        fields = ["id", "title", "message", "level", "regions", "source", "published_at", "expires_at"]
+        fields = ["id", "title", "message", "full_text", "level", "regions", "source",
+                  "published_at", "expires_at", "show_prices", "audio"]
+
+    def get_audio(self, obj):
+        langs = {"moore": obj.audio_moore, "dioula": obj.audio_dioula,
+                 "fulfulde": obj.audio_fulfulde, "francais": obj.audio_francais}
+        return {k: public_url(v) for k, v in langs.items() if v}
+
+
+class FeedItemSerializer(serializers.ModelSerializer):
+    category_label = serializers.CharField(source="get_category_display")
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FeedItem
+        fields = ["id", "kind", "category", "category_label", "title", "summary", "source",
+                  "region_label", "rumor_label", "fact_real", "image_url", "attested", "published_at"]
+
+    def get_image_url(self, obj):
+        return public_url(obj.image)
 
 
 class PriceCeilingSerializer(serializers.ModelSerializer):

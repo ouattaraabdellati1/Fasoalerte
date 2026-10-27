@@ -1,0 +1,32 @@
+{% extends "core/console/base.html" %}
+{% block title %}Dossier {{ rep.tracking_code }}{% endblock %}
+{% block content %}
+<a class="back" href="{% url 'console-home' %}">← File d'attente</a>
+<header class="hero"><div><small>DOSSIER ANONYME</small><h1>#{{ rep.tracking_code }}</h1></div><span class="pill {{ rep.urgency }}">{{ rep.get_urgency_display }}</span></header>
+<div class="cols">
+  <section class="panel">
+    <h2>Contenu du signalement</h2>
+    <dl class="kv">
+      <dt>Motif</dt><dd>{{ rep.get_category_display }}</dd>
+      <dt>Reçu le</dt><dd>{{ rep.created_at|date:"d/m/Y H:i" }}</dd>
+      <dt>Ville</dt><dd>{{ rep.city|default:"—" }}</dd>
+      <dt>Repère</dt><dd>{{ rep.location_hint|default:"—" }}</dd>
+      <dt>GPS</dt><dd>{% if rep.latitude %}{{ rep.latitude }}, {{ rep.longitude }} · <a href="https://www.openstreetmap.org/?mlat={{ rep.latitude }}&amp;mlon={{ rep.longitude }}&amp;zoom=16" target="_blank" rel="noopener noreferrer">voir sur la carte ↗</a>{% else %}—{% endif %}</dd>
+    </dl>
+    <h3>Description</h3>
+    <p class="desc">{{ rep.description|default:"(aucune description écrite)" }}</p>
+    {% if rep.photo %}<h3>Photo</h3><a href="{{ rep.photo.url }}" target="_blank"><img class="proof" src="{{ rep.photo.url }}" alt="Photo du signalement"></a>{% endif %}
+    {% if rep.audio %}<h3>Note vocale</h3><audio controls src="{{ rep.audio.url }}"></audio>{% endif %}
+    <p class="muted small">Aucune donnée personnelle n'est stockée : seul le code de suivi relie le citoyen au dossier.</p>
+  </section>
+  <section class="panel">
+    <h2>Traitement</h2>
+    <form method="post">{% csrf_token %}
+      {% for f in form %}<label>{{ f.label }}{{ f }}{% for e in f.errors %}<span class="ferr">{{ e }}</span>{% endfor %}</label>{% endfor %}
+      {% if can_edit %}<button class="btn primary full" type="submit">Enregistrer</button>{% else %}<p class="muted">Lecture seule pour votre rôle.</p>{% endif %}
+    </form>
+    <h3>Journal de l'intervention</h3>
+    <ol class="events">{% for e in events %}<li><b>{{ e.get_status_display }}</b> <small>{{ e.at|date:"d/m H:i" }}</small>{% if e.note %}<br>{{ e.note }}{% endif %}</li>{% endfor %}</ol>
+  </section>
+</div>
+{% endblock %}

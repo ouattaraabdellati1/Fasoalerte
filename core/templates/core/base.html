@@ -10,13 +10,17 @@
   <title>{% block title %}FasoAlerte{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'core/app.css' %}">
 </head>
-<body data-page="{% block page %}{% endblock %}">
+<body data-page="{% block page %}{% endblock %}" class="{% block bodyclass %}{% endblock %}">
   <header class="top">
-    <img class="logo" src="{% static 'core/icon-192.png' %}" alt="" width="40" height="40">
-    <div>
-      <div class="brand">FasoAlerte</div>
-      <div class="net"><span class="dot" id="netdot"></span><span id="nettext">Réseau actif</span></div>
+    <div class="bar">
+      <a class="home" href="/" aria-label="FasoAlerte – retour à l'accueil">
+        <img class="logo" src="{% static 'core/icon-192.png' %}" alt="" width="40" height="40">
+        <span class="brand">FasoAlerte</span>
+      </a>
+      <span class="net"><span class="dot" id="netdot"></span><span id="nettext">Réseau actif</span></span>
+      <a class="bell" id="bell" href="/" hidden aria-label="Alertes actives"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><b id="bellN">0</b></a>
     </div>
+    <div class="weave" aria-hidden="true"></div>
   </header>
   <main>{% block content %}{% endblock %}</main>
   <nav class="tabs" aria-label="Navigation">

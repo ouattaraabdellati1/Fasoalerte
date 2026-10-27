@@ -1,0 +1,25 @@
+{% extends "core/console/base.html" %}
+{% block title %}Fil national{% endblock %}
+{% block content %}
+<header class="hero"><div><small>COMMUNICATION OFFICIELLE</small><h1>Fil national &amp; démentis</h1></div></header>
+{% if can %}
+<section class="panel"><h2>Nouvelle publication</h2>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="grid2">{% for f in form %}
+      <label class="{% if f.name == 'summary' or f.name == 'fact_real' %}span2{% endif %}">{{ f.label }}{{ f }}{% for e in f.errors %}<span class="ferr">{{ e }}</span>{% endfor %}</label>
+    {% endfor %}</div>
+    <button class="btn primary full" type="submit">Publier dans le fil</button>
+  </form>
+</section>
+{% endif %}
+<section class="panel"><h2>Publications</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Titre</th><th>Type</th><th>Source</th><th>État</th><th></th></tr></thead>
+    <tbody>{% for i in items %}
+      <tr><td><b>{{ i.title }}</b><small>{{ i.published_at|date:"d/m H:i" }}</small></td><td>{{ i.get_kind_display }}</td><td>{{ i.source }}</td>
+          <td>{% if i.is_published %}<b class="okc">En ligne</b>{% else %}Retirée{% endif %}</td>
+          <td>{% if can_change %}<form method="post" action="{% url 'console-feed-toggle' i.pk %}">{% csrf_token %}<button class="btn small" type="submit">{% if i.is_published %}Retirer{% else %}Republier{% endif %}</button></form>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5" class="muted">Rien pour le moment.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}

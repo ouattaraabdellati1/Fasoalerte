@@ -1,0 +1,41 @@
+{% extends "core/console/base.html" %}
+{% block content %}
+<header class="hero"><div><small>CENTRE NATIONAL DE COORDINATION ET DE VEILLE CITOYENNE</small><h1>Tableau de bord</h1></div></header>
+<div class="kpis">
+  <div class="kpi"><small>SIGNALEMENTS OUVERTS</small><b>{{ kpi_open }}</b><span class="pill red">{{ kpi_critical }} critiques</span></div>
+  <div class="kpi"><small>ALERTES PUBLIÉES CE MOIS</small><b>{{ kpi_alerts }}</b></div>
+  <div class="kpi"><small>DENRÉES ENCADRÉES</small><b>{{ kpi_prices }}</b></div>
+</div>
+
+<section class="panel">
+  <div class="phead"><h2>File d'attente &amp; triage des signalements</h2>
+    <form method="get" class="filt">
+      <select name="statut">
+        <option value="ouverts"{% if statut == 'ouverts' %} selected{% endif %}>Ouverts</option>
+        <option value="clos"{% if statut == 'clos' %} selected{% endif %}>Clos</option>
+        <option value="tous"{% if statut == 'tous' %} selected{% endif %}>Tous</option>
+      </select>
+      <select name="categorie"><option value="">Toutes catégories</option>
+        {% for v, l in categories %}<option value="{{ v }}"{% if categorie == v %} selected{% endif %}>{{ l }}</option>{% endfor %}
+      </select>
+      <button class="btn" type="submit">Filtrer</button>
+    </form>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Réf. dossier</th><th>Motif</th><th>Lieu</th><th>Urgence</th><th>Preuves</th><th>Étape</th><th>Unité</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td><a href="{% url 'console-report' r.pk %}"><b>#{{ r.tracking_code }}</b></a><small>{{ r.created_at|date:"d/m H:i" }}</small></td>
+        <td>{{ r.get_category_display }}<small>{{ r.description|truncatechars:70 }}</small></td>
+        <td>{{ r.city|default:"—" }}<small>{{ r.location_hint|truncatechars:40 }}{% if r.latitude %} · {{ r.latitude|floatformat:4 }}, {{ r.longitude|floatformat:4 }}{% endif %}</small></td>
+        <td><span class="pill {{ r.urgency }}">{{ r.get_urgency_display }}</span></td>
+        <td>{% if r.photo %}📷{% endif %}{% if r.audio %}🎙{% endif %}{% if not r.photo and not r.audio %}—{% endif %}</td>
+        <td>{{ r.status }}/4</td>
+        <td>{{ r.assigned_unit|default:"—" }}</td>
+      </tr>
+    {% empty %}<tr><td colspan="7" class="muted">Aucun signalement.</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</section>
+{% endblock %}

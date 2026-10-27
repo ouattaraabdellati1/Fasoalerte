@@ -7,8 +7,8 @@ from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import IncidentReport, NationalAlert, PriceCeiling, StatusEvent
-from .serializers import (NationalAlertSerializer, PriceCeilingSerializer,
+from .models import FeedItem, IncidentReport, NationalAlert, PriceCeiling, StatusEvent
+from .serializers import (FeedItemSerializer, NationalAlertSerializer, PriceCeilingSerializer,
                           ReportCreateSerializer, ReportTrackSerializer)
 
 
@@ -54,6 +54,36 @@ class AlertListView(generics.ListAPIView):
         return qs
 
 
+class AlertDetailView(generics.RetrieveAPIView):
+    """GET /api/alerts/<id>/ – une alerte publiée et non expirée."""
+    serializer_class = NationalAlertSerializer
+    authentication_classes = []
+    throttle_scope = "public_read"
+
+    def get_queryset(self):
+        now = timezone.now()
+        return NationalAlert.objects.filter(is_published=True, published_at__lte=now) \
+            .filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))
+
+
+class FeedListView(generics.ListAPIView):
+    """GET /api/feed/?category=route&kind=rumor – fil national certifié."""
+    serializer_class = FeedItemSerializer
+    authentication_classes = []
+    pagination_class = None
+    throttle_scope = "public_read"
+
+    def get_queryset(self):
+        qs = FeedItem.objects.filter(is_published=True, published_at__lte=timezone.now())
+        cat = self.request.query_params.get("category")
+        kind = self.request.query_params.get("kind")
+        if cat in FeedItem.Category.values:
+            qs = qs.filter(category=cat)
+        if kind in FeedItem.Kind.values:
+            qs = qs.filter(kind=kind)
+        return qs[:30]
+
+
 class PriceListView(generics.ListAPIView):
     """GET /api/prices/ – mercuriale officielle."""
     serializer_class = PriceCeilingSerializer
@@ -69,5 +99,21 @@ def protected_media(request, path):
     try:
         full = safe_join(settings.MEDIA_ROOT, path)    # bloque ../../ (path traversal)
         return FileResponse(open(full, "rb"))
+    except (ValueError, FileNotFoundError, IsADirectoryError, PermissionError):
+        raise Http404
+
+
+_PUBLIC_EXT = (".mp3", ".m4a", ".ogg", ".wav", ".aac", ".jpg", ".jpeg", ".png", ".webp")
+
+
+def official_media(request, path):
+    """Audio et images OFFICIELS (publics). Les fichiers des citoyens restent privés."""
+    if not path.lower().endswith(_PUBLIC_EXT):
+        raise Http404
+    try:
+        full = safe_join(settings.MEDIA_ROOT, "official", path)
+        r = FileResponse(open(full, "rb"))
+        r["Cache-Control"] = "public, max-age=3600"
+        return r
     except (ValueError, FileNotFoundError, IsADirectoryError, PermissionError):
         raise Http404

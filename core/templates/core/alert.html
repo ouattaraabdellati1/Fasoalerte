@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Alerte – FasoAlerte{% endblock %}
+{% block page %}alert{% endblock %}
+{% block bodyclass %}dark{% endblock %}
+{% block content %}
+<div class="prio"><span class="pdot"></span> SIGNAL PRIORITAIRE <span class="pcanal" id="acanal"></span></div>
+
+<section class="acard" id="acard">
+  <div class="atag" id="atag">ALERTE</div>
+  <h1 id="atitle">Chargement…</h1>
+  <p id="amsg"></p>
+  <p id="afull" class="afull"></p>
+  <div id="aprices" class="aprices" hidden>
+    <div class="ahead"><span>DENRÉE ESSENTIELLE</span><span>NOUVEAU PLAFOND GARANTI</span></div>
+    <div id="aplist"></div>
+  </div>
+  <div class="asrc" id="asrc"></div>
+</section>
+
+<section class="avoice" id="avoice" hidden>
+  <h2>🎧 DIFFUSION VOCALE EN LANGUES</h2>
+  <p class="muted">Écoutez le résumé officiel :</p>
+  <div class="vgrid" id="vgrid"></div>
+  <audio id="aplayer" hidden></audio>
+</section>
+
+<div class="aactions">
+  <a class="btn red full big2" href="/signaler/?cat=fraude_prix">📣 Signaler une infraction / Spéculation</a>
+  <div class="two2">
+    <a class="btn dgray" id="asms" href="sms:">💬 Relayer par SMS</a>
+    <button type="button" class="btn dgreen" id="aack">✔ J'ai bien pris note</button>
+  </div>
+  <p class="muted small center">🔒 Accusé de réception anonymisé · Chiffré en local sur puce</p>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'core/alert.js' %}"></script>{% endblock %}

@@ -1,8 +1,8 @@
 /* Service worker : fait fonctionner l'appli hors-ligne. */
-const V = "fa-v1";
+const V = "fa-v3";
 const SHELL = ["/", "/signaler/", "/suivi/", "/urgences/", "/manifest.webmanifest",
   "/static/core/app.css", "/static/core/app.js", "/static/core/home.js", "/static/core/report.js",
-  "/static/core/track.js", "/static/core/icon-192.png"];
+  "/static/core/track.js", "/static/core/alert.js", "/static/core/urgences.js", "/static/core/icon-192.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

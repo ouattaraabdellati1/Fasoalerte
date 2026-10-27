@@ -1,0 +1,31 @@
+{% load static %}<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Console de commandement{% endblock %} – FasoAlerte</title>
+  <link rel="stylesheet" href="{% static 'core/console.css' %}">
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="{% url 'console-home' %}"><img src="{% static 'core/icon-192.png' %}" alt="" width="36" height="36"><span><b>FASOALERTE</b><small>Console de commandement</small></span></a>
+    <nav>
+      <a href="{% url 'console-home' %}" class="{% if active == 'home' %}on{% endif %}">▦ Tableau de bord</a>
+      {% if perms.core.view_nationalalert %}<a href="{% url 'console-alerts' %}" class="{% if active == 'alerts' %}on{% endif %}">📡 Alertes / SOS</a>{% endif %}
+      {% if perms.core.view_priceceiling %}<a href="{% url 'console-prices' %}" class="{% if active == 'prices' %}on{% endif %}">₣ Mercuriale &amp; Prix</a>{% endif %}
+      {% if perms.core.view_feeditem %}<a href="{% url 'console-feed' %}" class="{% if active == 'feed' %}on{% endif %}">📰 Fil &amp; Rumeurs</a>{% endif %}
+      {% if perms.core.view_auditlog %}<a href="{% url 'console-audit' %}" class="{% if active == 'audit' %}on{% endif %}">🛡 Journal d'audit</a>{% endif %}
+      {% if user.is_superuser %}<a href="/admin/">⚙ Comptes (admin Django)</a>{% endif %}
+    </nav>
+    <div class="who">
+      <small>Connecté</small><b>{{ user.get_username }}</b>
+      <form method="post" action="{% url 'console-logout' %}">{% csrf_token %}<button class="lnk" type="submit">Se déconnecter</button></form>
+    </div>
+  </aside>
+  <main class="content">{% block content %}{% endblock %}</main>
+</div>
+<script src="{% static 'core/console.js' %}"></script>
+</body>
+</html>

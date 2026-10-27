@@ -2,24 +2,41 @@
 {% load static %}
 {% block page %}home{% endblock %}
 {% block content %}
-<div class="chips"><span class="chip">🔒 Anonymat activé</span><span class="chip" id="stamp"></span></div>
+<div class="chips"><span class="chip ok">● Réseau mobile sécurisé</span><span class="chip">🛡 Anonymat activé</span><span class="chip" id="stamp"></span></div>
 
 <section id="hero" class="hero lvl-none">
-  <div class="hero-tag" id="hero-tag">Alerte nationale</div>
+  <div class="hero-top"><div class="hero-tag"><span class="pulse"></span><span id="hero-tag">Veille nationale</span></div><span class="hero-audio" id="hero-audio" hidden>🔊 Audio</span></div>
   <h1 id="hero-title">Aucune alerte nationale en cours</h1>
   <p id="hero-msg">Les alertes officielles apparaîtront ici dès leur publication.</p>
+  <div class="hero-btns" id="hero-btns" hidden>
+    <button type="button" class="pillbtn white" id="hero-play">▶ Écouter</button>
+    <a class="pillbtn glass" id="hero-more" href="/">Consignes complètes</a>
+  </div>
   <div class="hero-src" id="hero-src"></div>
 </section>
 
-<div class="two">
-  <a class="btn green big" href="/signaler/">Signaler un fait<small>Alerte citoyenne anonyme</small></a>
-  <a class="btn red big center" href="tel:1010">1010<small>Appel gratuit</small></a>
+<div class="actions">
+  <a class="act green" href="/signaler/">
+    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11v3h3l5 4V7L7 11zM16 9a4 4 0 010 6"/></svg>
+    <b>Signaler un fait</b><small>Alerte citoyenne géolocalisée</small>
+  </a>
+  <a class="act red" href="tel:1010">
+    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2 1a11 11 0 005 5l1-2 5 2v4a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z"/></svg>
+    <b>1010</b><small>Gratuit</small>
+  </a>
 </div>
 
-<h2 class="sec">Prix plafonnés</h2>
-<div id="prices" class="prices"><p class="muted">Chargement…</p></div>
-<a class="link" href="/signaler/?cat=fraude_prix">Signaler une spéculation ou un prix abusif →</a>
+<div class="filters" id="filters" role="tablist">
+  <button type="button" class="on" data-c="all">Toutes</button>
+  <button type="button" data-c="securite">Sécurité Civile</button>
+  <button type="button" data-c="route">Trafic &amp; Routes</button>
+  <button type="button" data-c="verif">Vérification</button>
+  <button type="button" data-c="prix">Prix</button>
+</div>
 
-<div class="note">Les données sont enregistrées sur votre téléphone : la consultation reste possible hors-ligne.</div>
+<h2 class="sec" id="fil">● Fil National Certifié <span class="upd" id="upd">Mis à jour à l'instant</span></h2>
+<div id="feed" class="feed"><p class="muted">Chargement…</p></div>
+
+<div class="sync"><span class="syncico">⟳</span><div><b>Synchronisation Locale Sécurisée</b><p>Consultation hors-ligne active. Vos signalements sont chiffrés de bout en bout et protégés conformément aux lois de la Commission de l'Informatique et des Libertés (CIL).</p></div></div>
 {% endblock %}
 {% block scripts %}<script src="{% static 'core/home.js' %}"></script>{% endblock %}

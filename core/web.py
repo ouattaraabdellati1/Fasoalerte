@@ -23,6 +23,15 @@ def page(template):
     return view
 
 
+def page_arg(template):
+    """Même chose que page(), pour les adresses qui contiennent un numéro."""
+    inner = page(template)
+
+    def view(request, **kwargs):
+        return inner(request)
+    return view
+
+
 @require_GET
 def service_worker(request):
     js = (Path(__file__).parent / "pwa" / "sw.js").read_text(encoding="utf-8")

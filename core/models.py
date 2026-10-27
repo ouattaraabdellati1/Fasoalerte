@@ -1,4 +1,5 @@
 import secrets
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 
@@ -17,6 +18,9 @@ CITY_CODES = {
 def make_tracking_code(city: str = "") -> str:
     prefix = CITY_CODES.get(city.strip().lower(), "BF")
     return f"FA-{prefix}-" + "".join(secrets.choice(_ALPHABET) for _ in range(8))
+
+
+AUDIO_EXT = FileExtensionValidator(["mp3", "m4a", "ogg", "wav", "aac"])
 
 
 class IncidentReport(models.Model):
@@ -99,6 +103,46 @@ class NationalAlert(models.Model):
     published_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField(null=True, blank=True)
     is_published = models.BooleanField(default=False)
+    full_text = models.TextField(blank=True, help_text="Consignes complètes (page de l'alerte)")
+    show_prices = models.BooleanField(default=False, help_text="Afficher la mercuriale sur la page de l'alerte")
+    # Diffusion vocale officielle (fichiers publics, ajoutés par le personnel)
+    audio_moore = models.FileField(upload_to="official/audio/", blank=True, validators=[AUDIO_EXT])
+    audio_dioula = models.FileField(upload_to="official/audio/", blank=True, validators=[AUDIO_EXT])
+    audio_fulfulde = models.FileField(upload_to="official/audio/", blank=True, validators=[AUDIO_EXT])
+    audio_francais = models.FileField(upload_to="official/audio/", blank=True, validators=[AUDIO_EXT])
+
+    class Meta:
+        ordering = ["-published_at"]
+
+    def __str__(self):
+        return self.title
+
+
+class FeedItem(models.Model):
+    """Carte du « Fil National Certifié » : information officielle ou démenti de rumeur."""
+
+    class Kind(models.TextChoices):
+        INFO = "info", "Information officielle"
+        RUMOR = "rumor", "Rumeur démentie"
+
+    class Category(models.TextChoices):
+        SECURITE = "securite", "Sécurité Civile"
+        ROUTE = "route", "Trafic & Routes"
+        VERIF = "verif", "Vérification"
+        AUTRE = "autre", "Autre"
+
+    kind = models.CharField(max_length=10, choices=Kind.choices, default=Kind.INFO)
+    category = models.CharField(max_length=10, choices=Category.choices, default=Category.SECURITE)
+    title = models.CharField(max_length=140)
+    summary = models.TextField(max_length=600)
+    source = models.CharField(max_length=120, help_text="Ex : FDS / Police, Ministère de la Fonction Publique")
+    region_label = models.CharField(max_length=60, blank=True, help_text="Ex : Centre • Ouaga")
+    rumor_label = models.CharField(max_length=40, blank=True, help_text="Ex : FAUX DOCUMENT (rumeurs)")
+    fact_real = models.TextField(max_length=600, blank=True, help_text="« Le fait réel » (rumeurs)")
+    image = models.ImageField(upload_to="official/images/", blank=True)
+    attested = models.BooleanField(default=True, help_text="Information attestée par l'autorité")
+    is_published = models.BooleanField(default=False)
+    published_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ["-published_at"]
@@ -116,3 +160,17 @@ class PriceCeiling(models.Model):
 
     def __str__(self):
         return f"{self.product} – {self.max_price_fcfa} F"
+
+
+class AuditLog(models.Model):
+    """Journal d'audit du personnel (qui a fait quoi). Jamais d'information sur les citoyens."""
+    user_name = models.CharField(max_length=150)
+    action = models.CharField(max_length=40)
+    detail = models.CharField(max_length=255, blank=True)
+    at = models.DateTimeField(default=timezone.now, editable=False)
+
+    class Meta:
+        ordering = ["-at"]
+
+    def __str__(self):
+        return f"{self.at:%d/%m %H:%M} {self.user_name} {self.action}"

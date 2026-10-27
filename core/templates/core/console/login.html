@@ -1,0 +1,19 @@
+{% load static %}<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>Connexion – Console FasoAlerte</title>
+<link rel="stylesheet" href="{% static 'core/console.css' %}"></head>
+<body class="loginpage">
+<form class="logincard" method="post" autocomplete="off">{% csrf_token %}
+  <img src="{% static 'core/icon-192.png' %}" alt="" width="56" height="56">
+  <h1>Console de commandement</h1>
+  <p class="muted">Accès réservé au personnel autorisé. Les connexions sont journalisées.</p>
+  {% if locked %}<div class="err">Trop de tentatives. Réessayez dans 15 minutes.</div>
+  {% else %}
+    {% if form.errors %}<div class="err">Identifiants incorrects.</div>{% endif %}
+    <label>Nom d'utilisateur<input name="username" autofocus required autocapitalize="none"></label>
+    <label>Mot de passe<input name="password" type="password" required autocomplete="current-password"></label>
+    <button class="btn primary full" type="submit">Se connecter</button>
+  {% endif %}
+</form>
+<script src="{% static 'core/console.js' %}"></script>
+</body></html>

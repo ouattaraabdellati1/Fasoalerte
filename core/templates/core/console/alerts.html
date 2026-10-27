@@ -1,0 +1,35 @@
+{% extends "core/console/base.html" %}
+{% block title %}Alertes{% endblock %}
+{% block content %}
+<header class="hero"><div><small>DIFFUSION OFFICIELLE</small><h1>Publication d'alertes</h1></div></header>
+<div class="note">Les alertes sont publiées <b>dans l'application FasoAlerte</b> (accueil, cloche et écran d'alerte). Le vrai Cell Broadcast sur tous les téléphones nécessite un accord avec les opérateurs télécoms.</div>
+{% if can_add %}
+<section class="panel">
+  <h2>Nouvelle alerte</h2>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="grid2">
+    {% for f in form %}
+      <label class="{% if f.name == 'message' or f.name == 'full_text' %}span2{% endif %}">{{ f.label }}{{ f }}
+        {% if f.name == 'title' or f.name == 'message' %}<small class="counter" data-for="{{ f.auto_id }}"></small>{% endif %}
+        {% for e in f.errors %}<span class="ferr">{{ e }}</span>{% endfor %}</label>
+    {% endfor %}
+    </div>
+    <button class="btn danger full" type="submit" data-confirm="Publier cette alerte à tous les utilisateurs de l'application ?">📡 Publier l'alerte maintenant</button>
+  </form>
+</section>
+{% endif %}
+<section class="panel">
+  <h2>Dernières alertes</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Alerte</th><th>Niveau</th><th>Publiée</th><th>État</th><th></th></tr></thead>
+    <tbody>{% for a in alerts %}
+      <tr><td><b>{{ a.title }}</b><small>{{ a.message|truncatechars:80 }}</small></td>
+          <td><span class="pill {{ a.level }}">{{ a.get_level_display }}</span></td>
+          <td>{{ a.published_at|date:"d/m H:i" }}</td>
+          <td>{% if a.is_published %}{% if a.expires_at and a.expires_at < now %}Expirée{% else %}<b class="okc">En ligne</b>{% endif %}{% else %}Retirée{% endif %}</td>
+          <td>{% if a.is_published and can_change %}<form method="post" action="{% url 'console-alert-retract' a.pk %}">{% csrf_token %}<button class="btn small" type="submit" data-confirm="Retirer cette alerte ?">Retirer</button></form>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5" class="muted">Aucune alerte.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}
