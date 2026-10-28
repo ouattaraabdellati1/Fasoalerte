@@ -137,14 +137,17 @@ import os
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"          # en production : DJANGO_DEBUG=0
 if DEBUG:
     SECRET_KEY = "dev-only-cle-non-secrete"
-    ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+    # .trycloudflare.com : uniquement pour tester avec un tunnel temporaire
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".trycloudflare.com"]
+    CSRF_TRUSTED_ORIGINS = ["https://*.trycloudflare.com"]
 else:
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]             # plante volontairement si absente
-    ALLOWED_HOSTS = os.environ["DJANGO_ALLOWED_HOSTS"].split(",")
+    ALLOWED_HOSTS = [h.strip() for h in os.environ["DJANGO_ALLOWED_HOSTS"].split(",") if h.strip()]
+    CSRF_TRUSTED_ORIGINS = ["https://" + h for h in ALLOWED_HOSTS]
 
 # 2) Durcissement HTTPS (actif seulement hors DEBUG)
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SSL_REDIRECT", "1") == "1"   # "0" si l'hébergeur gère déjà HTTPS et boucle
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000
@@ -161,6 +164,9 @@ ADMIN_URL = os.environ.get("DJANGO_ADMIN_URL", "admin/")
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 50
+
+# 4b) Fichiers statiques (CSS, JS, icônes) : « collectstatic » les copie ici pour l'hébergeur
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # 5) Fichiers des citoyens : JAMAIS publics. Servis uniquement au personnel connecté.
 MEDIA_URL = "/protected-media/"
