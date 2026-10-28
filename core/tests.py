@@ -127,7 +127,7 @@ class PwaTests(APITestCase):
         self.assertEqual(m.json()["short_name"], "FasoAlerte")
         s = self.client.get("/sw.js")
         self.assertEqual(s["Service-Worker-Allowed"], "/")
-        self.assertIn(b"fa-v3", s.content)
+        self.assertIn(b"fa-v4", s.content)
 
 
 class FeedAndAlertPageTests(APITestCase):
